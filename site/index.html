@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tracer Africa DevOps Registration</title>
+<meta name="description" content="Register and pay for the Tracer Africa DevOps Training Program: live, hands-on, beginner-friendly.">
+<meta property="og:title" content="Tracer Africa DevOps Training Program: Register">
+<meta property="og:description" content="Live instructor-led DevOps training with hands-on labs and a final project. Register and pay securely online.">
+<meta property="og:image" content="assets/flyer.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<script src="https://js.paystack.co/v2/inline.js" defer></script>
+<style>
+/* Layout: navy brand band with pitch on top, one form sheet overlapping it, summary + pay bar at the foot of the sheet. */
+:root{
+  --navy:#0a1a3a; --navy-2:#10295a; --blue:#1b6fe4; --sky:#3fa3ff;
+  --bg:#eef3fa; --sheet:#ffffff; --ink:#0d1b33; --muted:#5a6a85; --line:#d6e0ee;
+  --field:#f7f9fd; --pick:#eaf2ff; --ok:#12805c; --ok-bg:#e5f6ef; --warn:#9a5b00; --warn-bg:#fff3dc; --err:#b42318; --err-bg:#fdecea;
+  --display:"Sora",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#071229; --sheet:#0d1d3d; --ink:#e8eefb; --muted:#9db0cf; --line:#223a66;
+  --field:#0a1834; --pick:#12306a; --ok:#4fd1a1; --ok-bg:#0d3326; --warn:#f2c46b; --warn-bg:#3a2a08; --err:#ff9b8f; --err-bg:#3d1410;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#071229; --sheet:#0d1d3d; --ink:#e8eefb; --muted:#9db0cf; --line:#223a66;
+  --field:#0a1834; --pick:#12306a; --ok:#4fd1a1; --ok-bg:#0d3326; --warn:#f2c46b; --warn-bg:#3a2a08; --err:#ff9b8f; --err-bg:#3d1410;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body)}
+img{max-width:100%;display:block}
+a{color:var(--blue)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+
+.demo{background:var(--warn-bg);color:var(--warn);font-size:.85rem;text-align:center;padding:8px 16px;font-weight:600}
+
+/* Brand band */
+.band{background:radial-gradient(1200px 400px at 85% -10%,#1d4fae 0%,transparent 60%),linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;padding:28px 16px 96px}
+.wrap{max-width:760px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:52px;height:auto}
+.brand b{font:700 1.35rem/1 var(--display);letter-spacing:-.01em}
+.brand small{display:block;color:#8fc3ff;font-size:.8rem;letter-spacing:.14em;margin-top:5px;text-transform:uppercase}
+.pitch{margin-top:28px}
+.pitch h1{font:700 clamp(1.9rem,6vw,2.8rem)/1.08 var(--display);letter-spacing:-.025em;margin:0;text-wrap:balance}
+.pitch h1 span{color:var(--sky)}
+.pitch p{color:#c8d6ee;max-width:58ch;margin:14px 0 0;font-size:1.04rem}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;padding:0;list-style:none}
+.facts li{border:1px solid rgba(143,195,255,.35);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 12px;font-size:.88rem;color:#e3edff}
+.curr{display:inline-flex;align-items:center;gap:6px;margin-top:16px;color:#8fc3ff;font-weight:600;font-size:.95rem;text-decoration:none}
+.curr:hover{text-decoration:underline}
+
+/* Sheet */
+main{padding:0 16px 48px}
+.sheet{max-width:760px;margin:-64px auto 0;background:var(--sheet);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px -24px rgba(10,26,58,.45);overflow:hidden}
+.steps{display:flex;gap:0;border-bottom:1px solid var(--line);font-size:.82rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.steps li{flex:1;list-style:none;padding:12px 8px;text-align:center;position:relative}
+.steps li.on{color:var(--blue)}
+.steps li.on::after{content:"";position:absolute;left:18%;right:18%;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--blue)}
+.steps ol{display:contents}
+form,.state{padding:28px clamp(18px,5vw,40px) 32px}
+fieldset{border:0;margin:0 0 30px;padding:0;min-width:0}
+legend{font:600 1.1rem/1.2 var(--display);margin-bottom:14px;padding:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.full{grid-column:1/-1}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.92rem;min-width:0}
+label.f .hint{font-weight:400;color:var(--muted);font-size:.82rem}
+input[type=text],input[type=email],input[type=tel],select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--field);font-size:1rem;transition:border-color .15s}
+input:focus,select:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px rgba(27,111,228,.18)}
+.bad input,.bad select{border-color:var(--err)}
+.msg{color:var(--err);font-size:.82rem;font-weight:500;min-height:0}
+
+/* Choice cards */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.choices{grid-template-columns:1fr}}
+.choice{position:relative;display:block;cursor:pointer}
+.choice input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.choice .card{display:flex;flex-direction:column;gap:4px;height:100%;padding:16px 16px 16px 48px;border:1.5px solid var(--line);border-radius:12px;background:var(--field);transition:border-color .15s,background .15s}
+.choice .card::before{content:"";position:absolute;left:16px;top:19px;width:18px;height:18px;border-radius:50%;border:2px solid var(--line);background:var(--sheet)}
+.choice input:checked+.card{border-color:var(--blue);background:var(--pick)}
+.choice input:checked+.card::before{border:6px solid var(--blue)}
+.choice input:focus-visible+.card{outline:3px solid var(--sky);outline-offset:2px}
+.card .t{font-weight:700}
+.card .p{font:700 1.45rem/1.1 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.card .s{color:var(--muted);font-size:.86rem}
+.compact .card{padding-block:13px}
+.compact .card::before{top:15px}
+
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.seg button{border:0;background:transparent;padding:7px 14px;font-weight:600;font-size:.88rem;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--blue);color:#fff}
+
+.note{border-radius:10px;padding:12px 14px;font-size:.92rem;margin-top:12px}
+.note.info{background:var(--pick);color:var(--ink)}
+.note.warn{background:var(--warn-bg);color:var(--warn)}
+.note.err{background:var(--err-bg);color:var(--err)}
+
+/* Summary + pay */
+.pay{border-top:1px solid var(--line);margin:4px calc(-1 * clamp(18px,5vw,40px)) -32px;padding:20px clamp(18px,5vw,40px) 26px;background:var(--field);display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.sum{min-width:0}
+.sum .k{color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.sum .v{font:700 1.7rem/1.15 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sum .d{color:var(--muted);font-size:.88rem}
+.btn{appearance:none;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;font-size:1.02rem;padding:15px 26px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 8px 20px -10px rgba(27,111,228,.8);transition:transform .1s,background .15s}
+.btn:hover{background:#155ac0}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.65;cursor:progress}
+.btn.ghost{background:transparent;color:var(--blue);box-shadow:none;border:1.5px solid var(--line)}
+.lock{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px;flex-basis:100%}
+.spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Result states */
+.state{text-align:center;padding-block:44px}
+.badge{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;background:var(--ok-bg);color:var(--ok)}
+.badge.pending{background:var(--pick);color:var(--blue)}
+.state h2{font:700 1.7rem/1.2 var(--display);margin:0 0 10px;letter-spacing:-.02em;text-wrap:balance}
+.state p{color:var(--muted);max-width:52ch;margin:0 auto 12px}
+.receipt{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;text-align:left;max-width:420px;margin:22px auto 6px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:var(--field);font-size:.92rem}
+.receipt dt{color:var(--muted)}
+.receipt dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.ref{font-family:var(--mono);font-size:.88rem}
+
+footer{max-width:760px;margin:22px auto 0;color:var(--muted);font-size:.85rem;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="demo" id="demoBanner" hidden>Preview mode: no payment is taken. Connect the Google Sheets backend to go live.</div>
+
+<header class="band">
+  <div class="wrap">
+    <div class="brand">
+      <img src="assets/mark.png" alt="" width="52" height="33">
+      <div><b>Tracer Africa</b><small>Learn · Build · Grow</small></div>
+    </div>
+    <div class="pitch">
+      <h1>DevOps <span>Training Program</span></h1>
+      <p>A practical, beginner-friendly program that builds a strong foundation in DevOps and cloud technologies through live instruction, hands-on labs, practical exercises and a final project.</p>
+      <ul class="facts">
+        <li>Live instructor-led</li>
+        <li>2–3 sessions per week</li>
+        <li>~2 hours per session</li>
+        <li>Hands-on labs</li>
+        <li>Final project</li>
+      </ul>
+      <a class="curr" href="assets/flyer.jpg" target="_blank" rel="noopener">See the full curriculum <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="sheet" aria-live="polite">
+    <ol class="steps" id="steps"><li class="on" data-step="1">Register</li><li data-step="2">Pay</li><li data-step="3">Confirm</li></ol>
+
+    <!-- FORM -->
+    <form id="regForm" novalidate>
+      <fieldset>
+        <legend>Your details</legend>
+        <div class="grid">
+          <label class="f full" id="w-name">Full name
+            <input type="text" id="name" name="name" autocomplete="name" required maxlength="120" placeholder="e.g. Adaeze Okafor">
+            <span class="msg"></span></label>
+          <label class="f" id="w-email">Email address
+            <input type="email" id="email" name="email" autocomplete="email" required maxlength="160" placeholder="you@example.com">
+            <span class="msg"></span></label>
+          <label class="f" id="w-phone">WhatsApp / phone number
+            <input type="tel" id="phone" name="phone" autocomplete="tel" required maxlength="25" placeholder="+234 801 234 5678">
+            <span class="msg"></span></label>
+          <label class="f" id="w-country">Country
+            <input type="text" id="country" name="country" autocomplete="country-name" list="countries" required maxlength="60" placeholder="Start typing…">
+            <span class="msg"></span></label>
+          <label class="f" id="w-level">DevOps experience
+            <select id="level" name="level" required>
+              <option value="">Select your level</option>
+              <option>Complete beginner</option>
+              <option>Beginner</option>
+              <option>Some experience</option>
+              <option>Intermediate</option>
+              <option>Experienced professional</option>
+            </select>
+            <span class="msg"></span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Choose your program</legend>
+        <div class="seg" id="currencySeg" role="group" aria-label="Currency" hidden></div>
+        <div class="choices" id="programs">
+          <label class="choice"><input type="radio" name="program" id="prog-1M" value="1M" checked>
+            <span class="card"><span class="t">1-Month DevOps Training</span><span class="p" data-price="1M">$1,000</span><span class="s">4 weeks</span></span></label>
+          <label class="choice"><input type="radio" name="program" id="prog-2M" value="2M">
+            <span class="card"><span class="t">2-Month DevOps Training</span><span class="p" data-price="2M">$2,000</span><span class="s">8 weeks</span></span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Payment option</legend>
+        <div class="choices compact">
+          <label class="choice"><input type="radio" name="option" id="opt-full" value="Full payment" checked>
+            <span class="card"><span class="t">Full payment</span><span class="s">Pay once, today</span></span></label>
+          <label class="choice"><input type="radio" name="option" id="opt-plan" value="Payment plan">
+            <span class="card"><span class="t">Payment plan</span><span class="s" id="planSub">Spread the cost</span></span></label>
+        </div>
+        <div class="note info" id="planNote" hidden></div>
+      </fieldset>
+
+      <div class="note err" id="formError" hidden role="alert"></div>
+
+      <div class="pay">
+        <div class="sum">
+          <div class="k" id="sumK">Total due today</div>
+          <div class="v" id="sumV">$1,000</div>
+          <div class="d" id="sumD">1-Month DevOps Training · Full payment</div>
+        </div>
+        <button class="btn" type="submit" id="payBtn"><span id="payLbl">Proceed to payment</span></button>
+        <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Secure checkout by Paystack · Cards, bank transfer and USSD</div>
+      </div>
+    </form>
+
+    <!-- SUCCESS -->
+    <div class="state" id="stateSuccess" hidden tabindex="-1">
+      <div class="badge"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>Registration Successful</h2>
+      <p>Thank you for registering for the Tracer Africa DevOps Training Program. Your payment has been received successfully.</p>
+      <p>We'll contact you using the email address or WhatsApp number provided with your training schedule and onboarding information.</p>
+      <dl class="receipt" id="receipt"></dl>
+      <p style="font-size:.85rem">Keep your payment reference for your records.</p>
+    </div>
+
+    <!-- PLAN / INTEREST RECEIVED -->
+    <div class="state" id="statePlan" hidden tabindex="-1">
+      <div class="badge pending"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <h2>Registration received</h2>
+      <p>Thanks for registering for the Tracer Africa DevOps Training Program. We'll send the payment plan details to your email or WhatsApp, with a secure link to make your first payment.</p>
+      <dl class="receipt" id="receiptPlan"></dl>
+    </div>
+
+    <!-- VERIFYING / PENDING -->
+    <div class="state" id="stateVerify" hidden tabindex="-1">
+      <div class="badge pending"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></div>
+      <h2 id="verifyTitle">Confirming your payment…</h2>
+      <p id="verifyText">This takes a few seconds. Please keep this page open.</p>
+      <dl class="receipt" id="receiptVerify" hidden></dl>
+      <button class="btn ghost" id="retryVerify" type="button" hidden>Check again</button>
+    </div>
+  </section>
+
+  <footer>Questions? Message Tracer Africa on <a href="https://www.linkedin.com/company/tracer-africa/" target="_blank" rel="noopener">LinkedIn</a><span id="contactExtra"></span>.</footer>
+</main>
+
+<datalist id="countries">
+  <option>Nigeria</option><option>Ghana</option><option>Kenya</option><option>South Africa</option><option>Uganda</option><option>Rwanda</option><option>Tanzania</option><option>Cameroon</option><option>Egypt</option><option>Ethiopia</option><option>Zambia</option><option>Zimbabwe</option><option>Côte d'Ivoire</option><option>Senegal</option><option>Benin</option><option>Togo</option><option>Sierra Leone</option><option>Liberia</option><option>Botswana</option><option>Malawi</option><option>Morocco</option><option>United Kingdom</option><option>Ireland</option><option>United States</option><option>Canada</option><option>Germany</option><option>Netherlands</option><option>France</option><option>United Arab Emirates</option><option>Saudi Arabia</option><option>Qatar</option><option>India</option><option>Australia</option>
+</datalist>
+
+<script>
+/* ================== CONFIGURATION ==================
+   BACKEND_URL: your Google Apps Script web-app URL (ends in /exec).
+   Leave empty to run in preview mode (no payment taken).
+   Prices and payment-plan terms live in the backend (Code.gs) and are
+   loaded from there; the values below are only the first-paint defaults. */
+const CONFIG = {
+  BACKEND_URL: "",
+  CONTACT_EMAIL: "",      // optional, shown in the footer
+  CONTACT_WHATSAPP: "",   // optional, shown in the footer, e.g. "+234 801 234 5678"
+  DEFAULTS: {
+    prices: { USD: { "1M": 1000, "2M": 2000 } },
+    plan: null,
+    programs: { "1M": "1-Month DevOps Training", "2M": "2-Month DevOps Training" }
+  }
+};
+/* =================================================== */
+
+const $ = (s) => document.querySelector(s);
+const DEMO = !CONFIG.BACKEND_URL;
+let settings = CONFIG.DEFAULTS;
+let currency = Object.keys(settings.prices)[0];
+let pending = null;            // {sig, reference, accessCode, authorizationUrl}
+
+const SYMBOL = { USD: "$", NGN: "₦", GHS: "GH₵", KES: "KSh ", ZAR: "R" };
+function money(amount, cur) {
+  const n = Number(amount).toLocaleString("en-US", { maximumFractionDigits: 2 });
+  return (SYMBOL[cur] || cur + " ") + n;
+}
+function store(key, val) { try { val == null ? sessionStorage.removeItem(key) : sessionStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+function recall(key) { try { return JSON.parse(sessionStorage.getItem(key)); } catch (e) { return null; } }
+
+async function api(action, payload) {
+  // text/plain keeps this a "simple" request, so Apps Script needs no CORS preflight.
+  const res = await fetch(CONFIG.BACKEND_URL, { method: "POST", body: JSON.stringify({ action, ...payload }) });
+  if (!res.ok) throw new Error("The registration service did not respond (HTTP " + res.status + ").");
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || "Something went wrong. Please try again.");
+  return data;
+}
+
+/* ---------- Rendering ---------- */
+function selected(name) { const el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ""; }
+
+function renderCurrencies() {
+  const seg = $("#currencySeg");
+  const curs = Object.keys(settings.prices);
+  if (curs.length < 2) { seg.hidden = true; return; }
+  seg.hidden = false;
+  seg.innerHTML = "";
+  curs.forEach((c) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = c === "NGN" ? "Pay in Naira (₦)" : c === "USD" ? "Pay in US Dollars ($)" : "Pay in " + c;
+    b.setAttribute("aria-pressed", String(c === currency));
+    b.addEventListener("click", () => { currency = c; renderCurrencies(); renderPrices(); });
+    seg.appendChild(b);
+  });
+}
+
+function renderPrices() {
+  const p = settings.prices[currency];
+  document.querySelectorAll("[data-price]").forEach((el) => { el.textContent = money(p[el.dataset.price], currency); });
+  const prog = selected("program"), opt = selected("option");
+  const progName = settings.programs[prog];
+  const plan = settings.plan && settings.plan[currency];
+  $("#planSub").textContent = plan ? plan.label : "Spread the cost";
+  const note = $("#planNote");
+  if (opt === "Payment plan") {
+    if (plan) {
+      const first = plan.first[prog];
+      $("#sumK").textContent = "First instalment today";
+      $("#sumV").textContent = money(first, currency);
+      $("#sumD").textContent = progName + " · " + plan.label + " · Total " + money(p[prog], currency);
+      note.hidden = false; note.textContent = plan.description || ("Pay " + money(first, currency) + " today. We'll send reminders for the remaining instalments.");
+      $("#payLbl").textContent = "Proceed to payment";
+    } else {
+      $("#sumK").textContent = "Due today";
+      $("#sumV").textContent = money(0, currency);
+      $("#sumD").textContent = progName + " · Payment plan · Total " + money(p[prog], currency);
+      note.hidden = false; note.textContent = "Payment plan terms are being finalised. Submit your registration now and we'll send you the plan details and a payment link before the program starts.";
+      $("#payLbl").textContent = "Submit registration";
+    }
+  } else {
+    note.hidden = true;
+    $("#sumK").textContent = "Total due today";
+    $("#sumV").textContent = money(p[prog], currency);
+    $("#sumD").textContent = progName + " · Full payment";
+    $("#payLbl").textContent = "Proceed to payment";
+  }
+}
+
+function setStep(n) { document.querySelectorAll("#steps li").forEach((li) => li.classList.toggle("on", Number(li.dataset.step) <= n)); }
+
+function show(id) {
+  ["regForm", "stateSuccess", "statePlan", "stateVerify"].forEach((x) => { $("#" + x).hidden = x !== id; });
+  const el = $("#" + id);
+  if (id !== "regForm") { el.focus({ preventScroll: true }); $(".sheet").scrollIntoView({ behavior: "smooth", block: "start" }); }
+}
+
+function receipt(el, rows) {
+  el.innerHTML = "";
+  rows.filter((r) => r[1]).forEach(([k, v, mono]) => {
+    const dt = document.createElement("dt"); dt.textContent = k;
+    const dd = document.createElement("dd"); dd.textContent = v; if (mono) dd.className = "ref";
+    el.append(dt, dd);
+  });
+}
+
+function busy(on, label) {
+  const b = $("#payBtn");
+  b.disabled = on;
+  b.innerHTML = on ? '<span class="spin" aria-hidden="true"></span><span id="payLbl"></span>' : '<span id="payLbl"></span>';
+  $("#payLbl").textContent = label || "Proceed to payment";
+  if (!on) renderPrices();
+}
+
+function formError(text) { const e = $("#formError"); e.hidden = !text; e.textContent = text || ""; }
+
+/* ---------- Validation ---------- */
+function validate() {
+  const rules = {
+    name: (v) => v.trim().split(/\s+/).length >= 2 || "Enter your first and last name.",
+    email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || "Enter a valid email address.",
+    phone: (v) => v.replace(/[^\d]/g, "").length >= 7 || "Enter a phone number we can reach on WhatsApp, with country code.",
+    country: (v) => v.trim().length >= 2 || "Enter your country.",
+    level: (v) => !!v || "Choose your experience level."
+  };
+  let first = null;
+  Object.entries(rules).forEach(([id, test]) => {
+    const input = $("#" + id), wrap = $("#w-" + id), res = test(input.value);
+    wrap.classList.toggle("bad", res !== true);
+    wrap.querySelector(".msg").textContent = res === true ? "" : res;
+    if (res !== true && !first) first = input;
+  });
+  if (first) first.focus();
+  return !first;
+}
+
+function formData() {
+  return {
+    name: $("#name").value.trim(), email: $("#email").value.trim().toLowerCase(), phone: $("#phone").value.trim(),
+    country: $("#country").value.trim(), level: $("#level").value,
+    program: selected("program"), option: selected("option"), currency
+  };
+}
+
+/* ---------- Payment ---------- */
+function openCheckout(reg, data) {
+  setStep(2);
+  if (window.PaystackPop) {
+    const popup = new PaystackPop();
+    popup.resumeTransaction(reg.accessCode, {
+      onSuccess: () => verify(reg.reference, data),
+      onCancel: () => { setStep(1); busy(false); formError("Payment wasn't completed. Your details are saved, so you can select Proceed to payment to try again."); },
+      onError: () => { window.location.href = reg.authorizationUrl; }
+    });
+  } else {
+    window.location.href = reg.authorizationUrl;   // full-page Paystack checkout; returns here with ?reference=
+  }
+}
+
+async function verify(reference, data, attempt = 0) {
+  setStep(3);
+  show("stateVerify");
+  $("#retryVerify").hidden = true;
+  $("#verifyTitle").textContent = "Confirming your payment…";
+  $("#verifyText").textContent = "This takes a few seconds. Please keep this page open.";
+  try {
+    const r = await api("verify", { reference });
+    if (r.status === "Paid") return paid(r);
+    if (attempt < 4) return setTimeout(() => verify(reference, data, attempt + 1), 2500);
+    $("#verifyTitle").textContent = "We're still confirming your payment";
+    $("#verifyText").textContent = "If you were charged, your registration will be confirmed automatically within 15 minutes and we'll contact you. Keep this reference.";
+    receipt($("#receiptVerify"), [["Reference", reference, true], ["Status", r.status]]);
+    $("#receiptVerify").hidden = false; $("#retryVerify").hidden = false;
+    $("#retryVerify").onclick = () => verify(reference, data, 0);
+  } catch (e) {
+    $("#verifyTitle").textContent = "We couldn't confirm your payment yet";
+    $("#verifyText").textContent = e.message + " If you were charged, your registration will be confirmed automatically. Keep this reference.";
+    receipt($("#receiptVerify"), [["Reference", reference, true]]);
+    $("#receiptVerify").hidden = false; $("#retryVerify").hidden = false;
+    $("#retryVerify").onclick = () => verify(reference, data, 0);
+  }
+}
+
+function paid(r) {
+  store("ta_pending", null);
+  setStep(3);
+  receipt($("#receipt"), [
+    ["Name", r.name], ["Program", r.program], ["Amount paid", r.amountPaid != null ? money(r.amountPaid, r.currency) : ""],
+    ["Payment", r.option], ["Reference", r.reference, true]
+  ]);
+  show("stateSuccess");
+}
+
+async function onSubmit(ev) {
+  ev.preventDefault();
+  formError("");
+  if (!validate()) return;
+  const data = formData();
+  const sig = JSON.stringify(data);
+
+  if (DEMO) {
+    busy(true, "Opening checkout…");
+    setStep(2);
+    await new Promise((r) => setTimeout(r, 900));
+    const p = settings.prices[currency][data.program];
+    const ref = "TA-DEMO-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    if (data.option === "Payment plan" && !settings.plan) {
+      setStep(3);
+      receipt($("#receiptPlan"), [["Name", data.name], ["Program", settings.programs[data.program]], ["Reference", ref, true]]);
+      return show("statePlan");
+    }
+    return paid({ name: data.name, program: settings.programs[data.program], amountPaid: p, currency, option: data.option, reference: ref });
+  }
+
+  try {
+    if (pending && pending.sig === sig) return openCheckout(pending, data);   // retry after cancel: reuse same reference
+    busy(true, "Opening secure checkout…");
+    const reg = await api("register", data);
+    if (!reg.requiresPayment) {
+      setStep(3);
+      receipt($("#receiptPlan"), [["Name", data.name], ["Program", reg.program], ["Reference", reg.reference, true]]);
+      return show("statePlan");
+    }
+    pending = { sig, reference: reg.reference, accessCode: reg.accessCode, authorizationUrl: reg.authorizationUrl };
+    store("ta_pending", { reference: reg.reference });
+    openCheckout(pending, data);
+  } catch (e) {
+    setStep(1); busy(false);
+    formError(e.message);
+  }
+}
+
+/* ---------- Boot ---------- */
+async function boot() {
+  $("#demoBanner").hidden = !DEMO;
+  const extra = [CONFIG.CONTACT_WHATSAPP && "WhatsApp " + CONFIG.CONTACT_WHATSAPP, CONFIG.CONTACT_EMAIL].filter(Boolean);
+  if (extra.length) $("#contactExtra").textContent = " or " + extra.join(" · ");
+
+  document.querySelectorAll('input[name="program"],input[name="option"]').forEach((el) => el.addEventListener("change", renderPrices));
+  ["name", "email", "phone", "country", "level"].forEach((id) => $("#" + id).addEventListener("input", () => { const w = $("#w-" + id); if (w.classList.contains("bad")) { w.classList.remove("bad"); w.querySelector(".msg").textContent = ""; } }));
+  $("#regForm").addEventListener("submit", onSubmit);
+  renderCurrencies(); renderPrices();
+
+  if (DEMO) return;
+
+  // Returning from Paystack's full-page checkout
+  const q = new URLSearchParams(location.search);
+  const ref = q.get("reference") || q.get("trxref");
+  if (ref) { history.replaceState(null, "", location.pathname); verify(ref, null); }
+
+  try {
+    const s = await api("settings", {});
+    settings = { prices: s.prices, plan: s.plan, programs: s.programs };
+    if (!settings.prices[currency]) currency = Object.keys(settings.prices)[0];
+    renderCurrencies(); renderPrices();
+  } catch (e) { /* keep defaults; the backend re-prices every registration anyway */ }
+}
+boot();
+</script>
+</body>
+</html>
