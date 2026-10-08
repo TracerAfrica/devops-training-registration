@@ -201,9 +201,9 @@ footer{max-width:760px;margin:22px auto 0;color:var(--muted);font-size:.85rem;te
         <div class="seg" id="currencySeg" role="group" aria-label="Currency" hidden></div>
         <div class="choices" id="programs">
           <label class="choice"><input type="radio" name="program" id="prog-1M" value="1M" checked>
-            <span class="card"><span class="t">1-Month DevOps Training</span><span class="p" data-price="1M">$1,000</span><span class="s">4 weeks</span></span></label>
+            <span class="card"><span class="t">1-Month DevOps Training</span><span class="p" data-price="1M">$300</span><span class="s">4 weeks</span></span></label>
           <label class="choice"><input type="radio" name="program" id="prog-2M" value="2M">
-            <span class="card"><span class="t">2-Month DevOps Training</span><span class="p" data-price="2M">$2,000</span><span class="s">8 weeks</span></span></label>
+            <span class="card"><span class="t">2-Month DevOps Training</span><span class="p" data-price="2M">$600</span><span class="s">8 weeks</span></span></label>
         </div>
       </fieldset>
 
@@ -223,7 +223,7 @@ footer{max-width:760px;margin:22px auto 0;color:var(--muted);font-size:.85rem;te
       <div class="pay">
         <div class="sum">
           <div class="k" id="sumK">Total due today</div>
-          <div class="v" id="sumV">$1,000</div>
+          <div class="v" id="sumV">$300</div>
           <div class="d" id="sumD">1-Month DevOps Training · Full payment</div>
         </div>
         <button class="btn" type="submit" id="payBtn"><span id="payLbl">Proceed to payment</span></button>
@@ -277,7 +277,7 @@ const CONFIG = {
   CONTACT_EMAIL: "",      // optional, shown in the footer
   CONTACT_WHATSAPP: "",   // optional, shown in the footer, e.g. "+234 801 234 5678"
   DEFAULTS: {
-    prices: { USD: { "1M": 1000, "2M": 2000 } },
+    prices: { USD: { "1M": 300, "2M": 600 } },
     plan: null,
     programs: { "1M": "1-Month DevOps Training", "2M": "2-Month DevOps Training" }
   }
