@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+.vercel/
+service-account*.json
+.env*

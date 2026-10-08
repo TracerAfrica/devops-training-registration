@@ -1,0 +1,4 @@
+starlette>=0.37,<2
+google-auth>=2.29
+requests>=2.31
+tzdata>=2024.1
