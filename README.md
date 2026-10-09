@@ -1,7 +1,7 @@
 # Tracer Africa — DevOps Training Registration
 
 One-page **Register → Pay → Confirm** form for the Tracer Africa DevOps Training Program.
-Payments run through **Paystack**; every registration lands in a **Google Sheet** that doubles as the admin dashboard.
+Payments run through **Flutterwave** (USD cards; Paystack and Stripe also supported via `PAYMENT_PROVIDER`); every registration lands in a **Google Sheet** that doubles as the admin dashboard.
 
 ```
 site/                 public page (Netlify publishes this; Vercel serves it too)
@@ -11,7 +11,7 @@ api/index.py          Vercel entry point (Starlette ASGI app)
 tracer/
   config.py           programs, prices, payment plan, env settings
   service.py          register / verify / reconcile logic
-  paystack.py         Paystack client + webhook signature check
+  gateways.py         Flutterwave / Paystack / Stripe clients + webhook checks
   store.py            Google Sheet store (service account) + in-memory store
 tests/                python -m unittest discover -s tests -v
 vercel.json           routes /api/* to the app, daily reconcile cron
@@ -20,23 +20,23 @@ netlify.toml          Netlify: publishes site/ only
 
 ## How it works
 
-1. Student fills the form → `POST /api {action:"register"}`. The backend validates, **sets the price itself**, creates a Paystack transaction with a unique reference (`TA-YYMMDD-XXXXXX`) and appends a **Pending payment** row.
-2. The student pays on Paystack's hosted checkout and is sent back to the page.
-3. The page calls `verify`; the backend asks Paystack, checks amount + currency, and marks the row **Paid**.
-4. Paystack also calls `POST /api/paystack/webhook` (HMAC-SHA512 signed) on `charge.success`, so a payment is recorded even if the student closes the tab.
+1. Student fills the form → `POST /api {action:"register"}`. The backend validates, **sets the price itself**, creates a checkout with the payment provider using a unique reference (`TA-YYMMDD-XXXXXX`) and appends a **Pending payment** row.
+2. The student pays on the provider's hosted checkout (Flutterwave: in USD) and is sent back to the page.
+3. The page calls `verify`; the backend asks the provider, checks amount + currency, and marks the row **Paid**.
+4. The provider also calls `POST /api/<provider>/webhook` (Flutterwave: `verif-hash` header; `charge.completed`), so a payment is recorded even if the student closes the tab. The backend always re-checks with the provider's API before marking Paid.
 5. A daily Vercel cron (`/api/cron/reconcile`) re-checks pending rows and marks rows older than 24 h **Unpaid (abandoned)**.
 
 Statuses: `Paid` · `Paid – instalment 1` · `Pending payment` · `Plan – awaiting terms` · `Needs review` · `Unpaid (abandoned)`.
-Paystack emails the receipt to the student and a notification to you (Settings → Preferences → Transaction receipts).
+The provider emails the receipt to the student and a notification to you.
 
 ## API
 
 | Method | Path | Purpose |
 |---|---|---|
 | POST | `/api` | `{"action":"settings"}`, `{"action":"register", …}`, `{"action":"verify","reference":…}` |
-| POST | `/api/paystack/webhook` | Paystack events (signature checked) |
+| POST | `/api/flutterwave/webhook` | Flutterwave events (`verif-hash` checked). Also `/api/paystack/webhook`, `/api/stripe/webhook` |
 | GET | `/api/cron/reconcile` | Daily sweep (needs `Authorization: Bearer $CRON_SECRET`) |
-| GET | `/api/health` | Shows whether Paystack and the Sheet are configured |
+| GET | `/api/health` | Shows provider, and whether payments, webhook and Sheet are configured |
 
 ## Setup
 
@@ -51,20 +51,24 @@ Import this repo at vercel.com → New Project (Framework: Other). Add Environme
 
 | Name | Value |
 |---|---|
-| `PAYSTACK_SECRET_KEY` | `sk_test_…` (later `sk_live_…`) |
+| `FLW_SECRET_KEY` | Flutterwave secret key (`FLWSECK_TEST-…`, later live) |
+| `FLW_WEBHOOK_HASH` | the Secret hash you set in Flutterwave → Settings → Webhooks |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | full contents of the JSON key file |
 | `SHEET_ID` | the Sheet ID |
 | `CRON_SECRET` | any long random string |
 | `ALLOWED_ORIGINS` | optional; defaults to the Netlify site |
 
-Deploy, then open `https://<project>.vercel.app/api/health` — both `paystack` and `sheet` should be `true`.
+`PAYMENT_PROVIDER` defaults to `flutterwave` (alternatives: `paystack` with `PAYSTACK_SECRET_KEY`, `stripe` with `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`).
 
-### 3. Paystack
-- Settings → API Keys & Webhooks → **Test Webhook URL**: `https://<project>.vercel.app/api/paystack/webhook` (same for Live later).
-- USD: complete Compliance, add a USD (domiciliary) settlement account, then ask Paystack support to enable USD. Until then USD charges fail with "Currency not supported by merchant".
+Redeploy, then open `https://<project>.vercel.app/api/health` — `payments`, `webhook` and `sheet` should be `true`.
+
+### 3. Flutterwave
+- Sign up at flutterwave.com (Nigeria) and complete compliance. Test keys work immediately.
+- Settings → Webhooks: URL `https://<project>.vercel.app/api/flutterwave/webhook`, set a **Secret hash** (same value as `FLW_WEBHOOK_HASH`), tick charge events.
+- Settings → Business preferences → "How do you want to get your earnings?": **payout balance** keeps USD; a **bank account** settles USD into your NGN account. Withdrawing USD as USD needs a corporate domiciliary account.
 
 ### 4. The page
-Set `CONFIG.BACKEND_URL` in `site/index.html` to `https://<project>.vercel.app/api` and push. Netlify redeploys.
+Set `CONFIG.BACKEND_URL` in `site/index.html` to `https://tracer-africa-devops.vercel.app/api` and push. Netlify redeploys.
 
 ## Prices and payment plan
 
@@ -74,7 +78,7 @@ Edit `tracer/config.py` (`PRICES`, `PLAN`) and push; Vercel redeploys automatica
 
 ```
 pip install -r requirements.txt uvicorn
-USE_MEMORY_STORE=1 PAYSTACK_SECRET_KEY=sk_test_… uvicorn api.index:app --reload
+USE_MEMORY_STORE=1 FLW_SECRET_KEY=FLWSECK_TEST-… uvicorn api.index:app --reload
 python -m unittest discover -s tests -v
 ```
 
