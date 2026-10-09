@@ -14,7 +14,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
-<script src="https://js.paystack.co/v2/inline.js" defer></script>
 <style>
 /* Layout: navy brand band with pitch on top, one form sheet overlapping it, summary + pay bar at the foot of the sheet. */
 :root{
@@ -139,7 +138,7 @@ footer{max-width:760px;margin:22px auto 0;color:var(--muted);font-size:.85rem;te
 </style>
 </head>
 <body>
-<div class="demo" id="demoBanner" hidden>Preview mode: no payment is taken. Connect the Google Sheets backend to go live.</div>
+<div class="demo" id="demoBanner" hidden>Preview mode: no payment is taken yet.</div>
 
 <header class="band">
   <div class="wrap">
@@ -227,7 +226,7 @@ footer{max-width:760px;margin:22px auto 0;color:var(--muted);font-size:.85rem;te
           <div class="d" id="sumD">1-Month DevOps Training · Full payment</div>
         </div>
         <button class="btn" type="submit" id="payBtn"><span id="payLbl">Proceed to payment</span></button>
-        <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Secure checkout by Paystack · Cards, bank transfer and USSD</div>
+        <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span id="lockText">Secure checkout by Flutterwave · Visa, Mastercard and more · Pay in USD</span></div>
       </div>
     </form>
 
@@ -268,10 +267,10 @@ footer{max-width:760px;margin:22px auto 0;color:var(--muted);font-size:.85rem;te
 
 <script>
 /* ================== CONFIGURATION ==================
-   BACKEND_URL: your Google Apps Script web-app URL (ends in /exec).
+   BACKEND_URL: the Python API, e.g. "https://<project>.vercel.app/api".
    Leave empty to run in preview mode (no payment taken).
-   Prices and payment-plan terms live in the backend (Code.gs) and are
-   loaded from there; the values below are only the first-paint defaults. */
+   Prices and payment-plan terms live in the backend (tracer/config.py) and
+   are loaded from there; the values below are only the first-paint defaults. */
 const CONFIG = {
   BACKEND_URL: "",
   CONTACT_EMAIL: "",      // optional, shown in the footer
@@ -288,7 +287,7 @@ const $ = (s) => document.querySelector(s);
 const DEMO = !CONFIG.BACKEND_URL;
 let settings = CONFIG.DEFAULTS;
 let currency = Object.keys(settings.prices)[0];
-let pending = null;            // {sig, reference, accessCode, authorizationUrl}
+let pending = null;            // {sig, reference, checkoutUrl}
 
 const SYMBOL = { USD: "$", NGN: "₦", GHS: "GH₵", KES: "KSh ", ZAR: "R" };
 function money(amount, cur) {
@@ -299,7 +298,7 @@ function store(key, val) { try { val == null ? sessionStorage.removeItem(key) : 
 function recall(key) { try { return JSON.parse(sessionStorage.getItem(key)); } catch (e) { return null; } }
 
 async function api(action, payload) {
-  // text/plain keeps this a "simple" request, so Apps Script needs no CORS preflight.
+  // text/plain keeps this a "simple" request, so the browser needs no CORS preflight.
   const res = await fetch(CONFIG.BACKEND_URL, { method: "POST", body: JSON.stringify({ action, ...payload }) });
   if (!res.ok) throw new Error("The registration service did not respond (HTTP " + res.status + ").");
   const data = await res.json();
@@ -413,18 +412,10 @@ function formData() {
 }
 
 /* ---------- Payment ---------- */
-function openCheckout(reg, data) {
+function openCheckout(reg) {
   setStep(2);
-  if (window.PaystackPop) {
-    const popup = new PaystackPop();
-    popup.resumeTransaction(reg.accessCode, {
-      onSuccess: () => verify(reg.reference, data),
-      onCancel: () => { setStep(1); busy(false); formError("Payment wasn't completed. Your details are saved, so you can select Proceed to payment to try again."); },
-      onError: () => { window.location.href = reg.authorizationUrl; }
-    });
-  } else {
-    window.location.href = reg.authorizationUrl;   // full-page Paystack checkout; returns here with ?reference=
-  }
+  busy(true, "Redirecting to secure checkout…");
+  window.location.href = reg.checkoutUrl;   // hosted checkout; returns here with ?tx_ref= / ?reference= / ?ref= (or a cancel flag)
 }
 
 async function verify(reference, data, attempt = 0) {
@@ -483,7 +474,7 @@ async function onSubmit(ev) {
   }
 
   try {
-    if (pending && pending.sig === sig) return openCheckout(pending, data);   // retry after cancel: reuse same reference
+    if (pending && pending.sig === sig) return openCheckout(pending);
     busy(true, "Opening secure checkout…");
     const reg = await api("register", data);
     if (!reg.requiresPayment) {
@@ -491,9 +482,9 @@ async function onSubmit(ev) {
       receipt($("#receiptPlan"), [["Name", data.name], ["Program", reg.program], ["Reference", reg.reference, true]]);
       return show("statePlan");
     }
-    pending = { sig, reference: reg.reference, accessCode: reg.accessCode, authorizationUrl: reg.authorizationUrl };
-    store("ta_pending", { reference: reg.reference });
-    openCheckout(pending, data);
+    pending = { sig, reference: reg.reference, checkoutUrl: reg.checkoutUrl };
+    store("ta_pending", pending);
+    openCheckout(pending);
   } catch (e) {
     setStep(1); busy(false);
     formError(e.message);
@@ -513,14 +504,26 @@ async function boot() {
 
   if (DEMO) return;
 
-  // Returning from Paystack's full-page checkout
+  // Returning from checkout. Flutterwave: ?status=successful|cancelled&tx_ref=…; Paystack: ?reference=…; Stripe: ?ref=…
   const q = new URLSearchParams(location.search);
-  const ref = q.get("reference") || q.get("trxref");
-  if (ref) { history.replaceState(null, "", location.pathname); verify(ref, null); }
+  const anyRef = q.get("tx_ref") || q.get("reference") || q.get("trxref") || q.get("ref");
+  const cancelled = q.get("cancelled") || (q.get("status") === "cancelled" ? anyRef : null);
+  const ref = cancelled ? null : anyRef;
+  if (ref || cancelled) history.replaceState(null, "", location.pathname);
+  if (ref) verify(ref, null);
+  else if (cancelled) {
+    const saved = recall("ta_pending");
+    if (saved && saved.reference === cancelled) pending = saved;
+    formError("Payment wasn't completed, so you haven't been charged. Select Proceed to payment to try again.");
+  }
 
   try {
     const s = await api("settings", {});
     settings = { prices: s.prices, plan: s.plan, programs: s.programs };
+    const LOCK = { flutterwave: "Secure checkout by Flutterwave · Visa, Mastercard and more · Pay in USD",
+                   paystack: "Secure checkout by Paystack · Cards, bank transfer and USSD",
+                   stripe: "Secure checkout by Stripe · Cards, Apple Pay and Google Pay" };
+    if (LOCK[s.provider]) $("#lockText").textContent = LOCK[s.provider];
     if (!settings.prices[currency]) currency = Object.keys(settings.prices)[0];
     renderCurrencies(); renderPrices();
   } catch (e) { /* keep defaults; the backend re-prices every registration anyway */ }
