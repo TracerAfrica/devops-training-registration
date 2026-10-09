@@ -62,7 +62,8 @@ class SheetStore:
 
         if not service_account_json or not sheet_id:
             raise RuntimeError("Registration sheet is not configured.")
-        info = json.loads(service_account_json)
+        # Tolerate whitespace and anything pasted after the JSON object (e.g. pasted twice).
+        info, _ = json.JSONDecoder().raw_decode(service_account_json.strip())
         creds = service_account.Credentials.from_service_account_info(info, scopes=self.SCOPES)
         self.session = AuthorizedSession(creds)
         self.sheet_id = sheet_id

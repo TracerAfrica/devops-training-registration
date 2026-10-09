@@ -39,12 +39,14 @@ TIMEZONE = "Africa/Lagos"
 
 # Secrets / environment (set in Vercel → Project → Settings → Environment Variables).
 PAYMENT_PROVIDER = os.environ.get("PAYMENT_PROVIDER", "flutterwave").strip().lower()  # flutterwave | paystack | stripe
-FLW_SECRET_KEY = os.environ.get("FLW_SECRET_KEY", "")
-FLW_WEBHOOK_HASH = os.environ.get("FLW_WEBHOOK_HASH", "")    # the "Secret hash" you set in Flutterwave → Settings → Webhooks
-STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
-STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
-PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "")
+FLW_SECRET_KEY = os.environ.get("FLW_SECRET_KEY", "").strip()
+FLW_WEBHOOK_HASH = os.environ.get("FLW_WEBHOOK_HASH", "").strip()    # the "Secret hash" you set in Flutterwave → Settings → Webhooks
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "").strip()
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "").strip()
+PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "").strip()
 GOOGLE_SERVICE_ACCOUNT_JSON = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "")
-SHEET_ID = os.environ.get("SHEET_ID", "")
-SHEET_TAB = os.environ.get("SHEET_TAB", "Registrations")
-CRON_SECRET = os.environ.get("CRON_SECRET", "")
+SHEET_ID = os.environ.get("SHEET_ID", "").strip()
+if "/d/" in SHEET_ID:  # a full Sheet link was pasted: keep just the ID
+    SHEET_ID = SHEET_ID.split("/d/", 1)[1].split("/", 1)[0]
+SHEET_TAB = os.environ.get("SHEET_TAB", "Registrations").strip()
+CRON_SECRET = os.environ.get("CRON_SECRET", "").strip()
