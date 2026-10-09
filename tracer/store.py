@@ -6,7 +6,7 @@ import threading
 HEADERS = [
     "Registration date", "Reference", "Full name", "Email", "WhatsApp / phone", "Country",
     "Experience level", "Program", "Payment option", "Currency", "Amount due", "Amount paid",
-    "Payment status", "Paid at", "Channel", "Notes",
+    "Payment status", "Paid at", "Channel", "Notes", "Provider", "Payment ID",
 ]
 COL = {h: i for i, h in enumerate(HEADERS)}
 

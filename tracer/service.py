@@ -1,4 +1,4 @@
-"""Registration and payment logic. Pure: takes a store and a Paystack client, so it is easy to test."""
+"""Registration and payment logic. Pure: takes a store and a gateway factory, so it is easy to test."""
 
 import re
 import uuid
@@ -35,7 +35,7 @@ def _new_reference() -> str:
 
 def settings() -> dict:
     return {"ok": True, "prices": config.PRICES, "plan": config.PLAN,
-            "programs": config.PROGRAMS, "provider": "paystack"}
+            "programs": config.PROGRAMS, "provider": config.PAYMENT_PROVIDER}
 
 
 def _validate(b: dict) -> dict:
@@ -68,8 +68,9 @@ def _validate(b: dict) -> dict:
     return d
 
 
-def register(body: dict, store, paystack_factory) -> dict:
-    d = _validate(body)
+def register(body: dict, store_factory, gateway_factory) -> dict:
+    d = _validate(body)                      # validate before touching the sheet or the provider
+    store = store_factory()
     total = config.PRICES[d["currency"]][d["program"]]
     plan = (config.PLAN or {}).get(d["currency"])
     reference = _new_reference()
@@ -88,30 +89,18 @@ def register(body: dict, store, paystack_factory) -> dict:
         return {"ok": True, "requiresPayment": False, "reference": reference, "program": program}
 
     due = plan["first"][d["program"]] if d["option"] == "Payment plan" else total
-    init = paystack_factory().initialize({
-        "email": d["email"],
-        "amount": str(round(due * 100)),          # subunits (cents / kobo)
-        "currency": d["currency"],
-        "reference": reference,
-        "callback_url": config.SITE_URL,          # Paystack appends ?trxref=…&reference=…
-        "metadata": {
-            "cancel_action": f"{config.SITE_URL}?cancelled={reference}",
-            "program": program, "option": d["option"], "total_price": total,
-            "custom_fields": [
-                {"display_name": "Full name", "variable_name": "full_name", "value": d["name"]},
-                {"display_name": "WhatsApp", "variable_name": "whatsapp", "value": d["phone"]},
-                {"display_name": "Program", "variable_name": "program", "value": program},
-                {"display_name": "Payment option", "variable_name": "payment_option", "value": d["option"]},
-            ],
-        },
-    })
-    if not init.get("status"):
-        raise UserError(f"We could not start checkout: {init.get('message') or 'payment provider error'}.")
+    gw = gateway_factory()
+    label = program + (" (instalment 1)" if d["option"] == "Payment plan" else "")
+    checkout = gw.create(reference=reference, amount=due, currency=d["currency"], email=d["email"],
+                         product=label, site_url=config.SITE_URL,
+                         metadata={"full_name": d["name"], "whatsapp": d["phone"], "program": program,
+                                   "payment_option": d["option"], "total_price": str(total)})
 
     store.append({**row, "Amount due": due, "Payment status": "Pending payment",
+                  "Provider": gw.name, "Payment ID": checkout["payment_id"],
                   "Notes": f"Instalment 1 of plan; total {total}" if d["option"] == "Payment plan" else ""})
     return {"ok": True, "requiresPayment": True, "reference": reference,
-            "checkoutUrl": init["data"]["authorization_url"], "amount": due, "currency": d["currency"]}
+            "checkoutUrl": checkout["url"], "amount": due, "currency": d["currency"]}
 
 
 def _result(rec: dict) -> dict:
@@ -121,42 +110,38 @@ def _result(rec: dict) -> dict:
             "option": rec["Payment option"], "amountPaid": rec["Amount paid"], "currency": rec["Currency"]}
 
 
-def verify(reference: str, store, paystack_factory) -> dict:
+def verify(reference: str, store, gateway_factory) -> dict:
     reference = str(reference or "")
     if not REF_RE.match(reference):
         raise UserError("Invalid payment reference.")
     row_id, rec = store.find(reference)
     if row_id is None:
         raise UserError("We could not find that registration.")
-    if str(rec["Payment status"]).startswith("Paid"):
+    if str(rec["Payment status"]).startswith("Paid") or rec["Payment status"] != "Pending payment":
         return _result(rec)
 
-    res = paystack_factory().verify(reference)
-    tx = res.get("data") or {}
-    if not res.get("status") or not tx:
-        return {"ok": True, "status": rec["Payment status"], "reference": reference}
-
-    if tx.get("status") == "success":
-        paid = tx["amount"] / 100
+    res = gateway_factory(rec.get("Provider") or None).check(reference=reference, payment_id=rec.get("Payment ID"))
+    state = res.get("state")
+    if state == "paid":
+        paid = res["amount"]
         due = float(rec["Amount due"] or 0)
-        if tx.get("currency") != rec["Currency"] or paid + 0.001 < due:
-            note = f"Paid {tx.get('currency')} {paid} vs due {rec['Currency']} {due}"
+        if res.get("currency") != rec["Currency"] or paid + 0.001 < due:
+            note = f"Paid {res.get('currency')} {paid} vs due {rec['Currency']} {due}"
             store.update(row_id, {"Payment status": "Needs review", "Amount paid": paid,
                                   "Notes": f"{rec['Notes']}; {note}" if rec["Notes"] else note})
             return {"ok": True, "status": "Needs review", "reference": reference}
-        status = "Paid – instalment 1" if rec["Payment option"] == "Payment plan" else "Paid"
-        paid_at = tx.get("paid_at") or tx.get("paidAt")
-        try:
-            paid_at = _stamp(datetime.fromisoformat(paid_at.replace("Z", "+00:00"))) if paid_at else _stamp(_now())
-        except ValueError:
-            paid_at = _stamp(_now())
-        fields = {"Payment status": status, "Amount paid": paid, "Paid at": paid_at, "Channel": tx.get("channel", "")}
+        fields = {"Payment status": "Paid – instalment 1" if rec["Payment option"] == "Payment plan" else "Paid",
+                  "Amount paid": paid, "Paid at": _stamp(res.get("paid_at") or _now()),
+                  "Channel": res.get("channel", "")}
         store.update(row_id, fields)
         return _result({**rec, **fields})
-    return {"ok": True, "status": rec["Payment status"], "reference": reference, "gateway": tx.get("status")}
+    if state == "expired":
+        store.update(row_id, {"Payment status": "Unpaid (abandoned)"})
+        return {"ok": True, "status": "Unpaid (abandoned)", "reference": reference}
+    return {"ok": True, "status": rec["Payment status"], "reference": reference}
 
 
-def reconcile(store, paystack_factory, now: datetime | None = None) -> dict:
+def reconcile(store, gateway_factory, now: datetime | None = None) -> dict:
     """Confirm payments for students who closed the tab early; mark old unpaid rows as abandoned."""
     now = now or _now()
     cutoff = now - timedelta(hours=config.ABANDON_AFTER_HOURS)
@@ -167,9 +152,11 @@ def reconcile(store, paystack_factory, now: datetime | None = None) -> dict:
             continue
         counts["checked"] += 1
         try:
-            r = verify(rec["Reference"], store, paystack_factory)
+            r = verify(rec["Reference"], store, gateway_factory)
             if r["status"] == "Paid":
                 counts["paid"] += 1
+            elif r["status"] == "Unpaid (abandoned)":
+                counts["abandoned"] += 1
             elif r["status"] == "Pending payment":
                 created = datetime.strptime(str(rec["Registration date"]), TS_FMT).replace(tzinfo=tz)
                 if created < cutoff:

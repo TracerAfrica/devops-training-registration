@@ -19,7 +19,7 @@ PROGRAMS = {
     "2M": "2-Month DevOps Training",
 }
 
-# Major units (dollars). USD only: Paystack must enable USD on the account before live charges work.
+# Major units (dollars).
 PRICES = {
     "USD": {"1M": 300, "2M": 600},
 }
@@ -38,6 +38,11 @@ ABANDON_AFTER_HOURS = 24
 TIMEZONE = "Africa/Lagos"
 
 # Secrets / environment (set in Vercel → Project → Settings → Environment Variables).
+PAYMENT_PROVIDER = os.environ.get("PAYMENT_PROVIDER", "flutterwave").strip().lower()  # flutterwave | paystack | stripe
+FLW_SECRET_KEY = os.environ.get("FLW_SECRET_KEY", "")
+FLW_WEBHOOK_HASH = os.environ.get("FLW_WEBHOOK_HASH", "")    # the "Secret hash" you set in Flutterwave → Settings → Webhooks
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 PAYSTACK_SECRET_KEY = os.environ.get("PAYSTACK_SECRET_KEY", "")
 GOOGLE_SERVICE_ACCOUNT_JSON = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "")
 SHEET_ID = os.environ.get("SHEET_ID", "")
