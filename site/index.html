@@ -272,7 +272,10 @@ footer{max-width:760px;margin:22px auto 0;color:var(--muted);font-size:.85rem;te
    Prices and payment-plan terms live in the backend (tracer/config.py) and
    are loaded from there; the values below are only the first-paint defaults. */
 const CONFIG = {
-  BACKEND_URL: "",
+  BACKEND_URL: "https://tracer-africa-devops.vercel.app/api",
+  // While the payment key is a TEST key: real checkout only on ?test=1 (and on the return from checkout).
+  // Set to false once the live Flutterwave key is in Vercel.
+  TEST_ONLY: true,
   CONTACT_EMAIL: "",      // optional, shown in the footer
   CONTACT_WHATSAPP: "",   // optional, shown in the footer, e.g. "+234 801 234 5678"
   DEFAULTS: {
@@ -284,7 +287,8 @@ const CONFIG = {
 /* =================================================== */
 
 const $ = (s) => document.querySelector(s);
-const DEMO = !CONFIG.BACKEND_URL;
+const QS = new URLSearchParams(location.search);
+const DEMO = !CONFIG.BACKEND_URL || (CONFIG.TEST_ONLY && !QS.has("test") && !QS.has("tx_ref") && !QS.has("status"));
 let settings = CONFIG.DEFAULTS;
 let currency = Object.keys(settings.prices)[0];
 let pending = null;            // {sig, reference, checkoutUrl}
